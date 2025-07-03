@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра: Животные и их детёныши</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.min.js"></script>
+</head>
+<body>
+    <div id="app" class="container">
+        <header>
+            <h1>Игра: Животные и их детёныши</h1>
+            <a href="index.html" class="back-button">← На главную</a>
+        </header>
+
+        <main>
+            <div class="game-container">
+                <div class="game-info">
+                    <p>Перетащи карточку с животным на карточку с его детёнышем!</p>
+                    <div class="score">Правильно: {{ correctMatches }} / {{ totalPairs }}</div>
+                    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+                </div>
+
+                <div class="game-board">
+                    <div class="animals-column">
+                        <h2>Животные</h2>
+                        <div 
+                            v-for="(animal, index) in animals" 
+                            :key="'animal-'+index"
+                            class="card animal-card"
+                            draggable="true"
+                            @dragstart="dragStart($event, animal)"
+                            :class="{ matched: animal.matched, 'wrong-attempt': animal.wrongAttempt }"
+                        >
+                            {{ animal.name }}
+                            <span class="animal-emoji">{{ getEmoji(animal.name) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="babies-column">
+                        <h2>Детёныши</h2>
+                        <div 
+                            v-for="(baby, index) in shuffledBabies" 
+                            :key="'baby-'+index"
+                            class="card baby-card"
+                            @dragover.prevent
+                            @dragenter.prevent
+                            @drop="drop($event, baby)"
+                            :class="{ matched: baby.matched, 'wrong-attempt': baby.wrongAttempt }"
+                        >
+                            {{ baby.name }}
+                            <span class="baby-emoji">{{ getEmoji(baby.name) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="gameCompleted" class="completion-message">
+                    <h2>Поздравляем!</h2>
+                    <p>Ты отлично справился и правильно соединил всех животных с их детёнышами!</p>
+                    <p>Теперь ты знаешь, что:</p>
+                    <ul class="facts-list">
+                        <li v-for="animal in animals" :key="'fact-'+animal.name">
+                            {{ animal.name }} → {{ animal.baby }}
+                        </li>
+                    </ul>
+                    <button @click="resetGame">Играть ещё раз</button>
+                    <a href="index.html" class="back-button">На главную</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
